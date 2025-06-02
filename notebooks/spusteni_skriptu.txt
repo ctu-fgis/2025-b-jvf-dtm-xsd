@@ -1,1 +1,0 @@
-cd "C:\Users\michal\Desktop\FGIS\2025-b-jvf-dtm-xsd\notebooks" && "C:\Program Files\QGIS 3.40.6\bin\python.exe" -m notebook
