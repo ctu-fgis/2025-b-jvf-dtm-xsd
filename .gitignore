@@ -62,3 +62,7 @@ Thumbs.db
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+
+
+# my custom files
+spusteni_skriptu.txt
