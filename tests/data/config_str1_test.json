@@ -7,28 +7,19 @@
       }
     },
     "KategorieObjektu": {
-      "attributes": {
-        "KategorieObjektu": ["fixed"]
-      }
+      "fixed": true
     },
     "SkupinaObjektu": {
-      "attributes": {
-        "SkupinaObjektu": ["fixed"]
-      }
+      "fixed": true
     },
     "ObsahovaCast": {
-      "attributes": {
-        "ObsahovaCast": ["fixed"]
-      }
+      "fixed": true
     },
     "GeometrieObjektu": {
-      "special": "geometrie"
-    }
-  },
-  "references": {
+      "geom": true
+    },
     "atr:OblastObjektuKI": {
-      "flag_field": "OblastObjektuKI",
-      "min_occurs_field": "oblastKI_minOccurs"
+      "minOccurs": true
     }
   },
   "output_fields": [
@@ -47,6 +38,7 @@
     "SkupinaObjektu",
     "ObsahovaCast",
     "geom_minOccurs",
-    "oblastKI_minOccurs"
+    "OblastObjektuKI_minOccurs"
   ]
 }
+
