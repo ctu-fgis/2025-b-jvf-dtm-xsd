@@ -11,28 +11,6 @@ This repository contains the semestral project for the course **[Free Software G
 - [Matěj Klimeš](https://github.com/klimesm)
 - [Michal Kovář](https://github.com/kovarmi9)
 
-## 📁 Repository structure
-<pre>
-├── notebooks/                                    # Jupyter notebooks with development code
-│   └── test-parse-input-xsd-to-csv.ipynb         # Example: xsd loading, parsing, etc.
-├── tests/data/                                   # Input data for tests (e.g. XSD, GML)
-├── .gitignore                                    # Git ignored files config
-├── LICENSE                                       # MIT License file
-└── README.md                                     # This documentation
-</pre>
-
-## 📦 Dependencies
-
-- `xmlschema`
-- `lxml`
-- `pandas`
-
-Install them using:
-
-```bash
-pip install xmlschema lxml pandas
-```
-
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
