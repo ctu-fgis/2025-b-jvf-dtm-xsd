@@ -1,0 +1,22 @@
+name: Deploy MkDocs
+
+on:
+  push:
+    branches: [ issue-7-write-manual ]
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: ./doc
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: pip install mkdocs mkdocs-material
+      - run: mkdocs gh-deploy --force --clean --remote-branch gh-pages
