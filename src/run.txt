@@ -1,1 +1,0 @@
-python parse_xsd_to_csv.py --input JVF_DTM_143_XSD.zip --output str2.csv
