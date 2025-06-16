@@ -1,6 +1,7 @@
 # Imports
 import zipfile
 import pandas as pd
+import json
 from pathlib import Path
 from lxml import etree
 import tempfile
@@ -98,13 +99,121 @@ def extract_and_process(zip_path: Path, output_csv: Path):
     df.to_csv(output_csv, index=False, encoding="utf-8")
     print(f"Saved {len(df)} rows to {output_csv}")
 
+
+def create_detailed_csv(zip_path: Path, output_detailed_csv: Path, input_config: Path):
+    # Load JSON config
+    with open(input_config, "r", encoding="utf-8") as f:
+        config = json.load(f)
+
+    with tempfile.TemporaryDirectory() as tmpdir_str:
+        tmpdir = Path(tmpdir_str)
+
+        # Extract ZIP archive
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(tmpdir)
+
+        xsd_objects_path = tmpdir / "xsd" / "objekty"
+
+        records = []
+        output_fields = config["output_fields"]
+        element_rules = config["element_types"]
+
+        for file_path in xsd_objects_path.glob("*.xsd"):
+            try:
+                tree = etree.parse(str(file_path))
+                root = tree.getroot()
+                namespace = root.attrib.get("targetNamespace", "")
+
+                data = {key: "" for key in output_fields}
+                data["filename"] = file_path.name
+                data["namespace"] = namespace
+                data["zaznamy"] = []
+                data["OblastObjektuKI"] = 0
+
+                # Get top-level element
+                top_level_elems = root.xpath(f"./*[local-name()='element' and starts-with(@type, '{namespace}:')]")
+                if top_level_elems:
+                    main_elem = top_level_elems[0]
+                    data["name"] = main_elem.get("name", "")
+                    data["type"] = main_elem.get("type", "")
+
+                # Find all complex types and iterate over elements inside
+                complex_types = root.xpath(".//*[local-name()='complexType']")
+                for complex_type in complex_types:
+                    for element in complex_type.xpath(".//*[local-name()='element']"):
+                        name = element.get("name")
+                        ref = element.get("ref")
+                        min_occurs = element.get("minOccurs")
+                        match = None
+                        etype =None
+                        clean_ref = None
+                        # Handle defined element types
+                        if name in element_rules:
+                            etype = element_rules[name]
+                            match = "name"
+                        elif ref in element_rules:
+                            etype = element_rules[ref]
+                            match = "ref"
+                            clean_ref = ref.split(":")[-1]
+                        else:
+                            continue
+
+                        # Handle attributes
+                        if "attributes" in etype:
+                            for attr_name, props in etype["attributes"].items():
+                                for prop in props:
+                                    if match == "name":
+                                        val = element.xpath(f".//*[local-name()='attribute' and @name='{attr_name}']/@{prop}"
+                                                            )
+                                    elif match == "ref":
+                                        val = element.xpath(f".//*[local-name()='attribute' and @ref='{attr_name}']/@{prop}"
+                                                            )
+                                    if val:
+                                        data[f"{attr_name}_{prop}"] = val[0]
+
+                        # Handle special case when asking directly for element properties
+                        true_flags = [key for key, value in etype.items() if value is True and key != "geometry"]
+
+                        for flag in true_flags:
+                            # if flag != "geometry":
+                            val = element.get(flag)
+                            if val is not None:
+                                if flag == "minOccurs":
+                                    data[f"{clean_ref}_{flag}"] = val
+                                    data[clean_ref] = 1
+                                else:
+                                    if match == "name":
+                                        data[name] = val
+                                    elif match == "ref":
+                                        data[ref] = val
+
+                        # Handle special case for geometry
+                        if etype.get("geometry") is True:
+                            data["geom_minOccurs"] = min_occurs
+                            ref_elem = element.xpath(".//*[local-name()='element' and @ref]")
+                            data["geometry"] = [geom.get("ref") for geom in ref_elem]
+
+                records.append(data)
+
+            except Exception as e:
+                print(f"[Error] {file_path.name}: {e}")
+                raise
+
+        df = pd.DataFrame(records)
+        df.to_csv(output_detailed_csv, index=False, encoding="utf-8")
+        print(f"Saved {len(df)} rows to {output_detailed_csv}")
+
+
 # CLI entrypoint
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Extract <element> references from XSD ZIP archive.")
     parser.add_argument("--input", type=Path, required=True, help="Path to ZIP archive.")
-    parser.add_argument("--output", type=Path, required=True, help="Path to output CSV file.")
+    parser.add_argument("--summary", type=Path, required=True, help="Path to output summary CSV file.")
+    parser.add_argument("--detailed", type=Path, required=True, help="Path to output detailed CSV file.")
+    parser.add_argument("--config", type=Path, required=True, help="Path to JSON config file.")
     args = parser.parse_args()
 
-    extract_and_process(args.input, args.output)
+    extract_and_process(args.input, args.summary)
+    create_detailed_csv(args.input, args.detailed, args.config)
