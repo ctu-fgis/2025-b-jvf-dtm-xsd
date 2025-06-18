@@ -13,6 +13,11 @@ This repository contains the semestral project for the course **[Free Software G
 - [Michal Kovář](https://github.com/kovarmi9)
 
 
+## 📖 Documentation
+
+**Full online documentation here:** [https://ctu-fgis.github.io/2025-b-jvf-dtm-xsd/](https://ctu-fgis.github.io/2025-b-jvf-dtm-xsd/)
+
+
 ## 🔧 Usage
 
 #### Windows
