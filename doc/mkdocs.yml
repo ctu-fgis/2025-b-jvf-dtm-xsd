@@ -1,0 +1,13 @@
+site_name: JVF DTM XSD Parser
+theme:
+  name: material
+
+docs_dir: docs_src
+
+nav:
+  - Home: index.md
+  - About: about.md
+  - Usage: usage.md
+  - Repository Structure: structure.md
+  - Dependencies: dependencies.md
+  - License: license.md

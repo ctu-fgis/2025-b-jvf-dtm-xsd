@@ -1,0 +1,44 @@
+{
+  "element_types": {
+    "ObjektovyTypNazev": {
+      "attributes": {
+        "code_base": ["fixed", "use"],
+        "code_suffix": ["fixed", "use"]
+      }
+    },
+    "KategorieObjektu": {
+      "fixed": true
+    },
+    "SkupinaObjektu": {
+      "fixed": true
+    },
+    "ObsahovaCast": {
+      "fixed": true
+    },
+    "GeometrieObjektu": {
+      "geometry": true
+    },
+    "atr:OblastObjektuKI": {
+      "minOccurs": true
+    }
+  },
+  "output_fields": [
+    "filename",
+    "namespace",
+    "zaznamy",
+    "geometry",
+    "OblastObjektuKI",
+    "name",
+    "type",
+    "code_base_fixed",
+    "code_base_use",
+    "code_suffix_fixed",
+    "code_suffix_use",
+    "KategorieObjektu",
+    "SkupinaObjektu",
+    "ObsahovaCast",
+    "geom_minOccurs",
+    "OblastKI_minOccurs"
+  ]
+}
+
