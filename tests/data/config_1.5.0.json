@@ -35,6 +35,7 @@
       "fixed": true
     },
     "ObsahovaCast": {
+      "match": "name",
       "fixed": true
     }
   }
