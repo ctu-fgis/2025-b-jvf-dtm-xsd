@@ -11,7 +11,7 @@
     },
     "GeometrieObjektu": {
       "match": "name",
-      "type": true
+      "type": "unique"
     },
     "atr:OblastObjektuKI": {
       "match": "ref",
