@@ -14,8 +14,7 @@
       "type": true
     },
     "atr:OblastObjektuKI": {
-      "match": "ref",
-      "minOccurs": true
+      "match": "ref"
     },
     "ObjektovyTypNazev": {
       "match": "name",
