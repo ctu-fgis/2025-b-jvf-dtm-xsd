@@ -1,2 +1,1 @@
-```{include} ../../README.md
-:encoding: utf-8
+{% include-markdown "../../README.md" encoding="utf-8" %}
