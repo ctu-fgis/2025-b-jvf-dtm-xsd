@@ -6,7 +6,7 @@ Project repository is organized into the following folders and files:
 2025-b-jvf-dtm-xsd/
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml                    # GitHub Actions workflow for deploying MkDocs
+│       └── deploy.yml                    # GitHub Actions
 ├── doc/                                  # Documentation texts
 ├── doc.yml                               # MkDocs configuration file
 ├── LICENSE                               # MIT license text
