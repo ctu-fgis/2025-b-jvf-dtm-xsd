@@ -22,17 +22,3 @@ Install them using:
 ```bash
 pip install lxml pandas xmlschema
 ```
-
-💡 Tip: You can also create a `requirements.txt` file:
-
-```
-lxml
-pandas
-xmlschema
-```
-
-and install everything via:
-
-```bash
-pip install -r requirements.txt
-```
