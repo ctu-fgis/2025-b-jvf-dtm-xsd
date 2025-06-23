@@ -1,3 +1,2 @@
-```{include} ../../README.md
+{include} ../../README.md
 :encoding: utf-8
-```
