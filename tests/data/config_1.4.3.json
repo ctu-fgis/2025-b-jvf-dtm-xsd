@@ -26,11 +26,12 @@
     },
     "GeometrieObjektu": {
       "match": "name",
-      "type": "unique"
+      "minOccurs": true
     },
     "atr:OblastObjektuKI": {
       "match": "ref",
-      "exist": true
+      "exist": true,
+      "minOccurs": true
     }
   }
 }
