@@ -4,6 +4,10 @@ theme:
 
 docs_dir: docs_src
 
+plugins:
+  - include-markdown
+  - search
+
 nav:
   - Home: index.md
   - About: about.md
