@@ -1,16 +1,38 @@
-To run this project, you need Python with standard libraries:
-- `zipfile`
-- `json`
-- `pathlib`
-- `tempfile`
+# 🧰 Dependencies
 
-Other libraries must be installed manually:
-- `xmlschema`
-- `pandas`
-- `lxml`
+To run this project, you need **Python 3.x** and the following dependencies:
 
-Install them using pip:
+## ✅ Standard Python libraries (no installation needed)
+These are included with every Python distribution:
+
+- `zipfile` – for extracting the ZIP archive
+- `json` – for reading the config file
+- `pathlib` – for working with filesystem paths
+- `tempfile` – for creating temporary folders
+
+## 📦 External packages (must be installed via `pip`)
+These libraries must be installed manually:
+
+- [`lxml`](https://lxml.de/) – fast XML and XSD parsing  
+- [`pandas`](https://pandas.pydata.org/) – tabular data handling and CSV export  
+- [`xmlschema`](https://pypi.org/project/xmlschema/) – optional schema-level validation *(used only in some modules)*
+
+Install them using:
 
 ```bash
-pip install xmlschema pandas lxml
+pip install lxml pandas xmlschema
+```
+
+💡 Tip: You can also create a `requirements.txt` file:
+
+```
+lxml
+pandas
+xmlschema
+```
+
+and install everything via:
+
+```bash
+pip install -r requirements.txt
 ```
