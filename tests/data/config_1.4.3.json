@@ -24,13 +24,13 @@
       "match": "name",
       "fixed": true
     },
-    "GeometrieObjektu": {
-      "match": "name",
-      "minOccurs": true
-    },
     "atr:OblastObjektuKI": {
       "match": "ref",
       "exist": true,
+      "minOccurs": true
+    },
+    "GeometrieObjektu": {
+      "match": "name",
       "minOccurs": true
     }
   }
