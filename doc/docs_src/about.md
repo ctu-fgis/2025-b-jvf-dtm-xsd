@@ -10,4 +10,4 @@ It then produces two CSV outputs:
 - **summary.csv**: Provides a overview of key elements found in XSD files
 - **detailed.csv**: Contains a full breakdown of elements, types, and attributes extracted from XSD files based on a configuration file.
 
-**Tested on DTM schema versions 1.4.3 and 1.5.0.beta3.**
+**Tested on DTM XSD versions 1.4.3 and 1.5.0.beta3.**
