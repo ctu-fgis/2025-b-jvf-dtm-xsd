@@ -2,10 +2,13 @@
 
 This project focuses on parsing and analyzing XSD schemas used in the Czech national digital technical map (DTM). Python utility parses and validates the XSD schemas. On each run it will:
 
-1. **Unpack and validate**  
-   - Confirms every `.xsd` file in the ZIP is referenced by `index_data.xsd`/`input_data.xsd`  
-   - Flags any missing or unreferenced schemas with non-blocking warnings  
+- Unpacks the ZIP and verifies every `.xsd` file is referenced by `index_data.xsd` or `input_data.xsd`  
+- Prints a warning for any missing or unreferenced schemas (non-blocking)  
 
-2. **Generate CSV reports**  
-   - **Summary**: a concise list of all element references across your schemas  
-   - **Detailed**: a fully configurable, JSON-driven export that extracts exactly the fields you need
+It then produces two CSV outputs:
+
+- **summary.csv**: A simple list of all element references  
+- **detailed.csv**: A JSON-driven, fully configurable export with exactly the fields you need
+
+
+**Tested on DTM schema versions 1.4.3 and 1.5.0.beta3.**
