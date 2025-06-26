@@ -22,41 +22,65 @@ def normalize_path(p: str) -> str:
 
 def test_imported_xsd(zip_path: Path):
     """
-    Unpack the ZIP, locate main XSD (input_data.xsd or index_data.xsd),
-    perform import-vs-disk check, and print warnings.
+    Unpack the ZIP archive, locate the main XSD (input_data.xsd or index_data.xsd),
+    recursively traverse all <import> and <include> references,
+    compare them against the actual files in the directory,
+    and print warnings for any Missing or Unreferenced schemas.
     """
     with tempfile.TemporaryDirectory() as tmpdir_str:
-        output_path = Path(tmpdir_str)
-        # Extract ZIP
+        output_path = Path(tmpdir_str).resolve()
+        # 1) Rozbal
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(output_path)
 
-        # Locate main XSD
-        candidates = list(output_path.rglob("input_data.xsd")) + \
-                     list(output_path.rglob("index_data.xsd"))
+        # 2) Najdi hlavní XSD
+        candidates = list(output_path.rglob("input_data.xsd")) + list(output_path.rglob("index_data.xsd"))
         if not candidates:
-            raise FileNotFoundError("Neither 'input_data.xsd' nor 'index_data.xsd' found.")
+            raise FileNotFoundError("Nenalezen input_data.xsd ani index_data.xsd")
         xsd_path = candidates[0]
         print(f"Found main XSD: {xsd_path.relative_to(output_path)}", file=sys.stderr)
 
-        # Parse imports/includes
-        tree = etree.parse(str(xsd_path))
+        # 3) Rekurzivní sběr všech schemaLocation
         ns = {"xs": "http://www.w3.org/2001/XMLSchema"}
-        raw_imports = {
-            el.get("schemaLocation")
-            for tag in ("import", "include")
-            for el in tree.getroot().findall(f".//xs:{tag}", namespaces=ns)
-            if el.get("schemaLocation")
-        }
+        imported = set()              # normované, root‐relative cesty
+        to_process = [xsd_path]       # fronta XSD ke zpracování
 
-        # Normalize and collect sets
-        imported = { normalize_path(Path(loc).as_posix()) for loc in raw_imports }
+        while to_process:
+            current = to_process.pop()
+            tree = etree.parse(str(current))
+
+            for tag in ("import", "include"):
+                for el in tree.getroot().findall(f".//xs:{tag}", namespaces=ns):
+                    loc = el.get("schemaLocation")
+                    if not loc:
+                        continue
+
+                    # resolve relativně ke složce current souboru
+                    candidate = (current.parent / loc).resolve()
+
+                    if candidate.is_file():
+                        # cesta relativně k rootu
+                        try:
+                            rel = candidate.relative_to(output_path).as_posix()
+                        except ValueError:
+                            rel = Path(loc).as_posix()
+                        norm = normalize_path(rel)
+
+                        if norm not in imported:
+                            imported.add(norm)
+                            to_process.append(candidate)
+                    else:
+                        # odkazuje na neexistující XSD
+                        norm = normalize_path(Path(loc).as_posix())
+                        imported.add(norm)
+
+        # 4) Seznam všech skutečných .xsd v archivu
         all_files = {
             normalize_path(p.relative_to(output_path).as_posix())
             for p in output_path.rglob("*.xsd")
         }
 
-        # Compare and warn
+        # 5) Porovnání a varování
         for path in sorted(imported.union(all_files)):
             if   path in imported and path in all_files:
                 status = "OK"
