@@ -1,4 +1,5 @@
-# 2025-b-jvf-dtm-xsd
+<!-- docs-start -->
+# JVF DTM XSD Parser
 Group B (academic year 2024/2025)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -11,7 +12,7 @@ This repository contains the semestral project for the course **[Free Software G
 
 - [Matěj Klimeš](https://github.com/klimesm)
 - [Michal Kovář](https://github.com/kovarmi9)
-
+<!-- docs-end -->
 
 ## 📖 Documentation
 
@@ -35,5 +36,3 @@ python3 ./src/parse_xsd_to_csv.py --input ./tests/data/JVF_DTM_143_XSD.zip --sum
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
-
-
