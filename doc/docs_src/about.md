@@ -1,4 +1,4 @@
-## 📘 About
+# 📘 About
 
 This project focuses on parsing and analyzing XSD schemas used in the Czech national digital technical map (DTM). Python utility parses and validates the XSD schemas. On each run it will:
 
