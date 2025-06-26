@@ -8,5 +8,4 @@ This project focuses on parsing and analyzing XSD schemas used in the Czech nati
 
 2. **Generate CSV reports**  
    - **Summary**: a concise list of all element references across your schemas  
-   - **Detailed**: a fully configurable, JSON-driven export that extracts exactly the fields you need  
-
+   - **Detailed**: a fully configurable, JSON-driven export that extracts exactly the fields you need
