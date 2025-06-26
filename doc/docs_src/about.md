@@ -7,7 +7,7 @@ This project focuses on parsing and analyzing XSD schemas used in the Czech nati
 
 It then produces two CSV outputs:
 
-- **summary.csv**: A simple list of all element references  
-- **detailed.csv**: A JSON-driven, fully configurable export with exactly the fields you need
+- **summary.csv**: Provides a overview of key elements found in XSD files
+- **detailed.csv**: Contains a full breakdown of elements, types, and attributes extracted from XSD files based on a configuration file.
 
 **Tested on DTM schema versions 1.4.3 and 1.5.0.beta3.**
