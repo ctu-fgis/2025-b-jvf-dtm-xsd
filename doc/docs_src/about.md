@@ -10,5 +10,4 @@ It then produces two CSV outputs:
 - **summary.csv**: A simple list of all element references  
 - **detailed.csv**: A JSON-driven, fully configurable export with exactly the fields you need
 
-
 **Tested on DTM schema versions 1.4.3 and 1.5.0.beta3.**
