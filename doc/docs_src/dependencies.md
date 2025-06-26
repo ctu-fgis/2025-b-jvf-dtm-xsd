@@ -9,6 +9,8 @@ These are included with every Python distribution:
 - `json` – for reading the config file
 - `pathlib` – for working with filesystem paths
 - `tempfile` – for creating temporary folders
+- `argparse` – for parsing command-line arguments  
+- `sys` – for access to system‐level functions  
 
 ## 📦 External packages (must be installed via `pip`)
 These libraries must be installed manually:
