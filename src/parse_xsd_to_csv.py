@@ -104,58 +104,96 @@ def create_summary_csv(zip_path: Path, output_csv: Path):
 
         for file_path in xsd_objects_path.glob("*.xsd"):
             try:
+                # Parse the XSD file into an XML tree
                 tree = etree.parse(str(file_path))
                 root = tree.getroot()
 
-                complex_types = root.xpath(".//*[local-name()='complexType']")
+                # Find all element named ZaznamyObjektu
+                zaznamy_elements = root.xpath(".//*[local-name()='element'][@name='ZaznamyObjektu']")
 
-                for complex_type in complex_types:
-                    atr_normal = []
-                    atr_ki = []
-                    gml_refs = []
-                    gml_min_flags = []
-                    atr_ki_with_0 = False
+                # iterate over elements named ZaznamyObjektu, but there should be just one
+                for zaznamy_elem in zaznamy_elements:
+                    nested_elements = zaznamy_elem.xpath(".//*[local-name()='element']")
 
-                    for element in complex_type.xpath(".//*[local-name()='element']"):
-                        ref = element.get("ref")
-                        min_occurs = element.get("minOccurs")
+                    # Iterate over elements inside ZaznamyObjektu
+                    for element in nested_elements:
 
-                        if not ref:
-                            continue
+                        # If ZaznamObjektu is ref, that is the case for version 1.5.0
+                        if element.get("ref") == "ZaznamObjektu":
 
-                        key = (file_path.name, ref)
-                        if key in seen_global:
-                            continue
-                        seen_global.add(key)
+                            # Get the type for all types of ZaznamObjektu ()
+                            types = root.xpath("./*[local-name()='element'][@substitutionGroup='ZaznamObjektu']/@type")
+                            # Find complexType with name coresponding with one of the types
+                            matching_complex_types = []
+                            # Find all coresponding complex types
+                            for ctype in types:
+                                complex_types = root.xpath(f".//*[local-name()='complexType'][@name='{ctype}']")
+                                matching_complex_types.extend(complex_types)
+                            # Iterate over matching complex types
+                            for mctype in matching_complex_types:
+                                type = mctype.get("name")
+                                # Find output values according to version 1.5.0
+                                elems = mctype.xpath(".//*[local-name()='element' and not(@name='AtributyObjektu')]")
+                                for el in elems:
+                                    parent_name = el.get("name")
+                                    parent_type = el.get("type")
+                                    nazev = el.get("ref")
+                                    minOccurs = el.get("minOccurs")
+                                    is_choice = '1' if el.xpath("ancestor::*[local-name()='choice']") else None
+                                    records.append({
+                                        "filename": file_path.name,
+                                        "type": type,
+                                        "parent_name": parent_name,
+                                        "parent_type": parent_type,
+                                        "nazev": nazev,
+                                        "minOccurs": minOccurs,
+                                        "choice": is_choice
+                                    })
 
-                        if ref.startswith("atr:"):
-                            entry = {
-                                "filename": file_path.name,
-                                "nazev": ref,
-                                "minOccurs": min_occurs
-                            }
-                            if ref.endswith("KI"):
-                                atr_ki.append(entry)
-                                if min_occurs == "0":
-                                    atr_ki_with_0 = True
-                            else:
-                                atr_normal.append(entry)
+                            break
 
-                        elif ref.startswith("gml:"):
-                            gml_refs.append(ref)
-                            gml_min_flags.append(min_occurs)
+                        # If ZaznamObjektu is name, that is the case for version 1.4.3
+                        elif element.get("name") == "ZaznamObjektu":
+                            refs = []
+                            gml_group = []
+                            mOall = []
+                            check = True
+                            # Find all elements that have defined reference that is not cmn:ZapisObjektu
+                            for ref_el in element.xpath(
+                                    ".//*[local-name()='element'][@ref and not(@ref='cmn:ZapisObjektu')]"):
+                                ref_val = ref_el.get("ref")
+                                # Handle geometry and add to list
+                                if ref_val.startswith("gml:"):
+                                    gml_group.append(ref_val)
+                                    # finding gml parent just once for each file
+                                    if check:
+                                        geom_parent = ref_el.xpath(
+                                            "ancestor::*[local-name()='element'][@name='GeometrieObjektu']")
+                                        # minOccurs of GeometrieObjektu
+                                        minOccurs = geom_parent[0].get("minOccurs")
+                                        mOall.append(minOccurs)
+                                        check = False
+                                else:
+                                    # minOccurs of other output elements
+                                    minOccurs = ref_el.get("minOccurs")
+                                    mOall.append(minOccurs)
+                                    if gml_group:
+                                        refs.append(gml_group)
+                                        gml_group = []
 
-                    records.extend(atr_normal)
+                                    refs.append(ref_val)
 
-                    if gml_refs:
-                        min_occurs_final = "0" if "0" in gml_min_flags or atr_ki_with_0 else None
-                        records.append({
-                            "filename": file_path.name,
-                            "nazev": str(gml_refs),
-                            "minOccurs": min_occurs_final
-                        })
+                            if gml_group:
+                                refs.append(gml_group)
 
-                    records.extend(atr_ki)
+                            # Add everything to output
+                            for item, m in zip(refs, mOall):
+                                records.append({
+                                    "filename": file_path.name,
+                                    "nazev": item,
+                                    "minOccurs": m
+                                })
+                            break
 
             except etree.XMLSyntaxError as e:
                 print(f"[XMLSyntaxError] {file_path.name}: {e}")
