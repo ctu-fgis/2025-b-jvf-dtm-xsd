@@ -2,8 +2,10 @@ name: Deploy MkDocs
 
 on:
   push:
-    branches: [ issue-15-improve-documentation]
-
+    branches: [ issue-15-improve-documentation ]
+  pull_request:
+    branches: [ master ]
+    
 permissions:
   contents: write
 
