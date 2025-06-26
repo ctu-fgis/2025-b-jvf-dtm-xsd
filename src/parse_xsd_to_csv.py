@@ -29,21 +29,21 @@ def test_imported_xsd(zip_path: Path):
     """
     with tempfile.TemporaryDirectory() as tmpdir_str:
         output_path = Path(tmpdir_str).resolve()
-        # 1) Rozbal
+        # Unpack the ZIP archive
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(output_path)
 
-        # 2) Najdi hlavní XSD
+        # Locate the main XSD file
         candidates = list(output_path.rglob("input_data.xsd")) + list(output_path.rglob("index_data.xsd"))
         if not candidates:
-            raise FileNotFoundError("Nenalezen input_data.xsd ani index_data.xsd")
+            raise FileNotFoundError("Neither 'input_data.xsd' nor 'index_data.xsd' found.")
         xsd_path = candidates[0]
         print(f"Found main XSD: {xsd_path.relative_to(output_path)}", file=sys.stderr)
 
-        # 3) Rekurzivní sběr všech schemaLocation
+        # Recursively collect all <import>/<include> schemaLocation references
         ns = {"xs": "http://www.w3.org/2001/XMLSchema"}
-        imported = set()              # normované, root‐relative cesty
-        to_process = [xsd_path]       # fronta XSD ke zpracování
+        imported = set()              # will hold all normalized, root-relative schemaLocation paths
+        to_process = [xsd_path]       # queue of XSD files to process
 
         while to_process:
             current = to_process.pop()
@@ -55,32 +55,33 @@ def test_imported_xsd(zip_path: Path):
                     if not loc:
                         continue
 
-                    # resolve relativně ke složce current souboru
+                    # Resolve the referenced file relative to the current XSD's directory
                     candidate = (current.parent / loc).resolve()
 
                     if candidate.is_file():
-                        # cesta relativně k rootu
+                        # Compute its path relative to the ZIP root
                         try:
                             rel = candidate.relative_to(output_path).as_posix()
                         except ValueError:
                             rel = Path(loc).as_posix()
                         norm = normalize_path(rel)
 
+                        # Record and enqueue for further parsing if not seen before
                         if norm not in imported:
                             imported.add(norm)
                             to_process.append(candidate)
                     else:
-                        # odkazuje na neexistující XSD
+                        # Reference to a missing XSD file
                         norm = normalize_path(Path(loc).as_posix())
                         imported.add(norm)
 
-        # 4) Seznam všech skutečných .xsd v archivu
+        # List all actual .xsd files present in the archive
         all_files = {
             normalize_path(p.relative_to(output_path).as_posix())
             for p in output_path.rglob("*.xsd")
         }
 
-        # 5) Porovnání a varování
+        # Compare imported vs. actual files and print warnings
         for path in sorted(imported.union(all_files)):
             if   path in imported and path in all_files:
                 status = "OK"
