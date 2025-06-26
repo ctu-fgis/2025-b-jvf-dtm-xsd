@@ -2,8 +2,10 @@ name: Deploy MkDocs
 
 on:
   push:
-    branches: [ issue-7-write-manual, master ]
-
+    branches: [ issue-15-improve-documentation ]
+  pull_request:
+    branches: [ master ]
+    
 permissions:
   contents: write
 
@@ -18,5 +20,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - run: pip install mkdocs mkdocs-material
+      - run: pip install mkdocs mkdocs-material mkdocs-include-markdown-plugin
       - run: mkdocs gh-deploy --force --clean --remote-branch gh-pages

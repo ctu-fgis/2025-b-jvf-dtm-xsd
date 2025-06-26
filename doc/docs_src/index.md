@@ -1,4 +1,6 @@
-# JVF DTM XSD Parser
-
-Welcome to the documentation for the semestral project of Group B (2024/2025) at CTU.
-
+{%
+    include-markdown "../../README.md"
+    start="<!-- docs-start -->"
+    end="<!-- docs-end -->"
+    encoding="utf-8"
+%}

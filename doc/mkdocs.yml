@@ -4,10 +4,16 @@ theme:
 
 docs_dir: docs_src
 
+plugins:
+  - include-markdown
+  - search
+
 nav:
   - Home: index.md
   - About: about.md
   - Usage: usage.md
+  - Config File Structure: config.md
   - Repository Structure: structure.md
+  - Repository: https://github.com/ctu-fgis/2025-b-jvf-dtm-xsd
   - Dependencies: dependencies.md
   - License: license.md
