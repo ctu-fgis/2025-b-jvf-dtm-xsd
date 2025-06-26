@@ -202,6 +202,9 @@ def create_summary_csv(zip_path: Path, output_csv: Path):
                 raise
 
     df = pd.DataFrame(records)
+    # Ensure output directory exists
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(output_csv, index=False, encoding="utf-8")
     df.to_csv(output_csv, index=False, encoding="utf-8")
     print(f"Saved {len(df)} rows to {output_csv}")
 
@@ -323,6 +326,9 @@ def create_detailed_csv(zip_path: Path, output_detailed_csv: Path, input_config:
                 raise
 
         df = pd.DataFrame(records)
+        # Ensure output directory exists
+        output_detailed_csv.parent.mkdir(parents=True, exist_ok=True)
+        df.to_csv(output_detailed_csv, index=False, encoding="utf-8")
         df = order_dataframe_columns_by_config(df, config, element_types)
         df.to_csv(output_detailed_csv, index=False, encoding="utf-8")
         print(f"Saved {len(df)} rows to {output_detailed_csv}")
