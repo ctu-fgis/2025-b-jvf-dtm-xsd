@@ -1,0 +1,43 @@
+{
+  "filename": true,
+  "namespace": true,
+  "name": true,
+  "type": true,
+
+  "element_types": {
+    "ZaznamObjektu": {
+      "match": "substitutionGroup",
+      "type": true
+    },
+    "GeometrieObjektu": {
+      "match": "name",
+      "type": "unique"
+    },
+    "atr:OblastObjektuKI": {
+      "match": "ref",
+      "exist": true
+    },
+    "ObjektovyTypNazev": {
+      "match": "name",
+      "attributes": {
+        "code_base": ["fixed", "use"],
+        "code_suffix": ["fixed", "use"],
+        "dim": ["fixed", "use"],
+        "gia": ["fixed", "use"]
+      }
+    },
+    "KategorieObjektu": {
+      "match": "name",
+      "fixed": true
+    },
+    "SkupinaObjektu": {
+      "match": "name",
+      "fixed": true
+    },
+    "ObsahovaCast": {
+      "match": "name",
+      "fixed": true
+    }
+  }
+}
+

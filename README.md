@@ -20,16 +20,36 @@ This repository contains the semestral project for the course **[Free Software G
 
 ## 🔧 Usage
 
-#### Windows
+### Basic syntax
 
 ```cmd
-python .\src\parse_xsd_to_csv.py --input .\tests\data\JVF_DTM_143_XSD.zip --summary .\tests\output\summary.csv --detailed .\tests\output\detailed.csv --config .\tests\data\config_str1_test.json
+python parse_xsd_to_csv.py --input <ZIP_FILE> --summary <SUMMARY_CSV> --detailed <DETAILED_CSV> --config <CONFIG_JSON>
+```
+### Examples for Project Structure
+
+#### Windows 
+XSD version 1.4.3
+
+```cmd
+python .\src\parse_xsd_to_csv.py --input .\tests\data\JVF_DTM_143_XSD.zip --summary .\tests\output\summary_1.4.3.csv --detailed .\tests\output\detailed_1.4.3.csv --config .\tests\data\config_1.4.3.json
 ```
 
-#### Linux
+XSD version 1.5.0
 
 ```cmd
-python3 ./src/parse_xsd_to_csv.py --input ./tests/data/JVF_DTM_143_XSD.zip --summary ./tests/output/summary.csv --detailed ./tests/output/detailed.csv --config ./tests/data/config_str1_test.json
+python .\src\parse_xsd_to_csv.py --input .\tests\data\JVF_DTM_150_beta3_XSD.zip --summary .\tests\output\summary_1.5.0.csv --detailed .\tests\output\detailed_1.5.0.csv --config .\tests\data\config_1.5.0.json
+```
+
+#### Linux / macOS
+XSD version 1.4.3
+
+```cmd
+python3 ./src/parse_xsd_to_csv.py --input ./tests/data/JVF_DTM_143_XSD.zip --summary ./tests/output/summary_1.4.3.csv --detailed ./tests/output/detailed_1.4.3.csv --config ./tests/data/config_1.4.3.json
+```
+XSD version 1.5.0
+
+```cmd
+python3 ./src/parse_xsd_to_csv.py --input ./tests/data/JVF_DTM_150_beta3_XSD.zip --summary ./tests/output/summary_1.5.0.csv --detailed ./tests/output/detailed_1.5.0.csv --config ./tests/data/config_1.5.0.json
 ```
 
 ## 📜 License
