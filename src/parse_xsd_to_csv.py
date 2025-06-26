@@ -11,13 +11,62 @@ import sys
 # Function to normalize paths
 def normalize_path(p: str) -> str:
     """
-    Remove leading '../' segments and 'xsd/' prefix from a POSIX-style path.
+    Remove leading '../' segments and 'xsd/' prefix from paths.
     """
     while p.startswith("../"):
         p = p[3:]
     if p.startswith("xsd/"):
         p = p[4:]
     return p
+
+
+def test_imported_xsd(zip_path: Path):
+    """
+    Unpack the ZIP, locate main XSD (input_data.xsd or index_data.xsd),
+    perform import-vs-disk check, and print warnings.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir_str:
+        output_path = Path(tmpdir_str)
+        # Extract ZIP
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(output_path)
+
+        # Locate main XSD
+        candidates = list(output_path.rglob("input_data.xsd")) + \
+                     list(output_path.rglob("index_data.xsd"))
+        if not candidates:
+            raise FileNotFoundError("Neither 'input_data.xsd' nor 'index_data.xsd' found.")
+        xsd_path = candidates[0]
+        print(f"Found main XSD: {xsd_path.relative_to(output_path)}", file=sys.stderr)
+
+        # Parse imports/includes
+        tree = etree.parse(str(xsd_path))
+        ns = {"xs": "http://www.w3.org/2001/XMLSchema"}
+        raw_imports = {
+            el.get("schemaLocation")
+            for tag in ("import", "include")
+            for el in tree.getroot().findall(f".//xs:{tag}", namespaces=ns)
+            if el.get("schemaLocation")
+        }
+
+        # Normalize and collect sets
+        imported = { normalize_path(Path(loc).as_posix()) for loc in raw_imports }
+        all_files = {
+            normalize_path(p.relative_to(output_path).as_posix())
+            for p in output_path.rglob("*.xsd")
+        }
+
+        # Compare and warn
+        for path in sorted(imported.union(all_files)):
+            if   path in imported and path in all_files:
+                status = "OK"
+            elif path in imported:
+                status = "Missing"
+            else:
+                status = "Unreferenced"
+
+            if status != "OK":
+                print(f"Warning: {path} → {status}", file=sys.stderr)
 
 # Function to load and parse all .xsd files in a directory
 def load_xsd_files(directory: Path):
@@ -228,51 +277,6 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=Path, required=True, help="Path to JSON config file.")
     args = parser.parse_args()
 
-### This block of code serves for ckecks 
-
-    with tempfile.TemporaryDirectory() as tmpdir_str:
-        output_path = Path(tmpdir_str)
-        with zipfile.ZipFile(args.input, 'r') as zip_ref:
-            zip_ref.extractall(output_path)
-
-        # locate the main XSD
-        candidates = list(output_path.rglob("input_data.xsd")) + list(output_path.rglob("index_data.xsd"))
-        if not candidates:
-            raise FileNotFoundError("Neither 'input_data.xsd' nor 'index_data.xsd' found.")
-        xsd_path = candidates[0]
-        print(f"Found main XSD: {xsd_path.relative_to(output_path)}", file=sys.stderr)
-
-        # parse imports/includes
-        tree = etree.parse(str(xsd_path))
-        ns = {"xs": "http://www.w3.org/2001/XMLSchema"}
-        raw_imports = {
-            el.get("schemaLocation")
-            for tag in ("import", "include")
-            for el in tree.getroot().findall(f".//xs:{tag}", namespaces=ns)
-            if el.get("schemaLocation")
-        }
-
-        # normalize and collect both sets
-        imported = { normalize_path(Path(loc).as_posix()) for loc in raw_imports }
-        all_files = {
-            normalize_path(p.relative_to(output_path).as_posix())
-            for p in output_path.rglob("*.xsd")
-        }
-
-        # compare and warn
-        for path in sorted(imported.union(all_files)):
-            in_imp = path in imported
-            on_disk = path in all_files
-            if in_imp and on_disk:
-                status = "OK"
-            elif in_imp:
-                status = "Missing"
-            else:
-                status = "Unreferenced"
-            if status != "OK":
-                print(f"Warning: {path} → {status}", file=sys.stderr)
-
-### End of block of code that serves for ckecks 
-
+    test_imported_xsd(args.input)
     extract_and_process(args.input, args.summary)
     create_detailed_csv(args.input, args.detailed, args.config)
