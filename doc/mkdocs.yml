@@ -12,6 +12,7 @@ nav:
   - Home: index.md
   - About: about.md
   - Usage: usage.md
+  - Config File Structure: config.md
   - Repository Structure: structure.md
   - Dependencies: dependencies.md
   - License: license.md
