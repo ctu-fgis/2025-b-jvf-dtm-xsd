@@ -47,6 +47,9 @@ XSD version 1.5.0
 ```cmd
 python3 ./src/parse_xsd_to_csv.py --input ./tests/data/JVF_DTM_150_beta3_XSD.zip --summary ./tests/output/summary_1.5.0.csv --detailed ./tests/output/detailed_1.5.0.csv --config ./tests/data/config_1.5.0.json
 ```
+## Configuration File
+
+For detailed information about the configuration file structure and settings, see the [Configuration File Structure](config.md).
 
 ## Notes
 
